@@ -50,6 +50,10 @@ global class Sns {
     }
 
     global PublishResponse publish(String topicArn, Object payload) {
+        return publish(topicArn, payload, null);
+    }
+    
+    global PublishResponse publish(String topicArn, Object payload, Map<String,Object> attributes) {
         
         RestRequest request = new RestRequest();
         request.httpMethod = 'POST';
@@ -74,6 +78,42 @@ global class Sns {
         body.getParameters().put('Message', Json.serialize(new Map<String,Object>{
             'default' => Json.serialize(payload)
         }));
+        
+        // https://stackoverflow.com/a/50876144
+        // https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
+        if (attributes == null) attributes = new Map<String,Object>();
+        List<String> keys = new List<String>(attributes.keySet());
+        for (Integer i = 0; i < keys.size(); i++) {
+            String key = keys[i];
+            Integer index = i + 1;
+            Object value = attributes.get(key);
+            
+            if (value instanceof String) {
+                
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Name', key);
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.DataType', 'String');
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.StringValue', (String)value);
+                
+            } else if (value instanceof Decimal) {
+                
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Name', key);
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.DataType', 'Number');
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.StringValue', String.valueOf(value));
+                
+            } else if (value instanceof Blob) {
+                
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Name', key);
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.DataType', 'Binary');
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.BinaryValue', EncodingUtil.base64encode((Blob)value));
+                
+            } else if (value instanceof List<String>) {
+                
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Name', key);
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.DataType', 'String.Array');
+                body.getParameters().put('MessageAttributes.entry.' + index + '.Value.StringValue', Json.serialize(value));
+                
+            } else throw new StringException('Message Attribute data type not supported: ' + value);
+        }
         
         request.requestBody = Blob.valueOf(body.getUrl().substringAfter('?'));
         HttpResponse response = this.connector.send(request);

@@ -116,4 +116,80 @@
         System.assertEquals(expected, actual, 'wrong signature');
     }
     
+    @IsTest static void testMessageAttributesString() {
+        
+        //act
+        try
+        {
+            Test.setMock(HttpCalloutMock.class, new SignatureMock());
+            connector().sns(testRegion).publish('TopicArn', '{}', new Map<String,Object>{'key' => 'val'});
+        }
+        catch (Exception e)
+        {
+            //suppress errors, just get static
+        }
+        
+        //assert
+        String actual = testResponse.getBody();
+        String expected = '2bc67e6415796d1cf74f4c0f4e2c855b18b1036ee9b6413323016a79deef862f';
+        System.assertEquals(expected, actual, 'wrong signature');
+    }
+    
+    @IsTest static void testMessageAttributesNumber() {
+        
+        //act
+        try
+        {
+            Test.setMock(HttpCalloutMock.class, new SignatureMock());
+            connector().sns(testRegion).publish('TopicArn', '{}', new Map<String,Object>{'key' => -123.456});
+        }
+        catch (Exception e)
+        {
+            //suppress errors, just get static
+        }
+        
+        //assert
+        String actual = testResponse.getBody();
+        String expected = '79ffe1da4d5ab70d58bee0f0ef53c37ca26ba65aae30ba9a0b4a8f0d3e47494b';
+        System.assertEquals(expected, actual, 'wrong signature');
+    }
+    
+    @IsTest static void testMessageAttributesArray() {
+        
+        //act
+        try
+        {
+            Test.setMock(HttpCalloutMock.class, new SignatureMock());
+            connector().sns(testRegion).publish('TopicArn', '{}', new Map<String,Object>{'key' => new List<String>{'foo', 'bar'}});
+        }
+        catch (Exception e)
+        {
+            //suppress errors, just get static
+        }
+        
+        //assert
+        String actual = testResponse.getBody();
+        String expected = '6f40e7cc6f15f83afd4667fb6b5d9d0a59063a38e0586d3216910f82833d593b';
+        System.assertEquals(expected, actual, 'wrong signature');
+    }
+    
+    @IsTest static void testMessageAttributesBinary() {
+        
+        //act
+        try
+        {
+            Test.setMock(HttpCalloutMock.class, new SignatureMock());
+            connector().sns(testRegion).publish('TopicArn', '{}', new Map<String,Object>{'key' => EncodingUtil.convertFromHex('ffffffff')});
+        }
+        catch (Exception e)
+        {
+            //suppress errors, just get static
+        }
+        
+        //assert
+        String actual = testResponse.getBody();
+        String expected = 'a7f97beaf1133af1ed15183efd4c61a057e684b7f090ce68c6a8949d3f6257d2';
+        System.assertEquals(expected, actual, 'wrong signature');
+    }
+    
 }
