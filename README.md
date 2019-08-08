@@ -4,7 +4,7 @@
 
 # Amazon Web Services SDK for Salesforce Apex
 
-The AWS SDK for Salesforce makes it easy for developers to access Amazon Web Services in their Apex code, and build robust applications and software using services like Amazon S3, Amazon EC2, etc. You can get started in minutes by installing the package: **[/packaging/installPackage.apexp?p0=04t4H000000gNtT](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t4H000000gNtT)**.
+The AWS SDK for Salesforce makes it easy for developers to access Amazon Web Services in their Apex code, and build robust applications and software using services like Amazon S3, Amazon EC2, etc. You can get started in minutes by installing the package: **[/packaging/installPackage.apexp?p0=04t4H000000gNu2](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t4H000000gNu2)**.
 
 ###### Sign up then go to your AWS Console > Security Credentials > Access Keys:
 
